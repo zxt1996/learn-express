@@ -1,13 +1,12 @@
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
+import 'dotenv/config';
 
 class App {
     public app: express.Application;
-    public port: number;
 
-    constructor(controller: any[], port: number) {
+    constructor(controller: any[]) {
         this.app = express();
-        this.port = port;
 
         this.initializeMiddleware();
         this.initializeControllers(controller);
@@ -34,8 +33,9 @@ class App {
     }
 
     public listen() {
-        this.app.listen(this.port, () => {
-            console.log(`App listening on the port ${this.port}`);
+        // 从.env文件中获取PORT
+        this.app.listen(process.env.PORT, () => {
+            console.log(`App listening on the port ${process.env.PORT}`);
         })
     }
 }
