@@ -3,6 +3,7 @@ import * as bodyParser from 'body-parser';
 import 'dotenv/config';
 import { Controller } from './interfaces/controller.interface';
 import * as mongoose from 'mongoose';
+import errorMiddleware from './middleware/error.middleware';
 
 class App {
     public app: express.Application;
@@ -13,11 +14,18 @@ class App {
         this.connectToTheDatabase();
         this.initializeMiddleware();
         this.initializeControllers(controller);
+        // Since Express runs all the middleware from the first to the last, 
+        // your error handlers should be at the end of your application stack. 
+        this.initializeErrorHandling();
     }
 
     private initializeMiddleware() {
         this.app.use(this.loggerMiddleware);
         this.app.use(bodyParser.json());
+    }
+
+    private initializeErrorHandling() {
+        this.app.use(errorMiddleware);
     }
 
     // Middleware functions have access to the request and response objects.  

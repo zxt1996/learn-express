@@ -2,6 +2,7 @@ import * as express from 'express';
 import { Post } from './post.interface';
 import postModel from './post.model';
 import { Controller } from '../interfaces/controller.interface';
+import PostNotFoundException from '../exceptions/PostNotFoundException';
 
 class PostsController implements Controller{
     public path = '/posts';
@@ -42,31 +43,39 @@ class PostsController implements Controller{
             })
     }
 
-    private getPostById = (req: express.Request, res: express.Response) => {
-        this.post.findById(req.params.id)
+    private getPostById = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+        const id = req.params.id;
+        this.post.findById(id)
             .then((posts: any) => {
                 res.send(posts);
+            }).catch((error: any) => {
+                // 使用中间件处理错误
+                // If you pass the error to the next function, 
+                // the framework omits(省略) all the other middleware in the chain 
+                // and skips straight to the error handling middleware 
+                // which is recognized by the fact that it has four arguments.
+                next(new PostNotFoundException(error.toString()));
             })
     }
 
-    private modifyPost = (req: express.Request, res: express.Response) => {
+    private modifyPost = (req: express.Request, res: express.Response, next: express.NextFunction) => {
         const postData: Post = req.body;
         const id = req.params.id;
         this.post.findByIdAndUpdate(id, postData, { new: true })
             .then((posts: any) => {
                 res.send(posts);
+            }).catch((err: any) => {
+                next(new PostNotFoundException(err.toString()));
             })
     }
 
-    private deletePost = (req: express.Request, res: express.Response) => {
+    private deletePost = (req: express.Request, res: express.Response, next: express.NextFunction) => {
         const id = req.params.id;
         this.post.findByIdAndDelete(id)
             .then((successResponse: any) => {
-                if (successResponse) {
-                    res.send(200);
-                } else {
-                    res.send(404);
-                }
+                res.send(200);
+            }).catch((err: any) => {
+                next(new PostNotFoundException(err.toString()));
             })
     }
 }
