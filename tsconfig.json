@@ -4,7 +4,9 @@
         "target": "es2017",
         "outDir": "./dist",
         "baseUrl": "./src",
-        "strict": true
+        "strict": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
     },
     "include": [
         "src/**/*.ts", "src/utils/validateEnv.ts"
