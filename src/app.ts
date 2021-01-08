@@ -1,13 +1,16 @@
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import 'dotenv/config';
+import { Controller } from './interfaces/controller.interface';
+import * as mongoose from 'mongoose';
 
 class App {
     public app: express.Application;
 
-    constructor(controller: any[]) {
+    constructor(controller: Controller[]) {
         this.app = express();
 
+        this.connectToTheDatabase();
         this.initializeMiddleware();
         this.initializeControllers(controller);
     }
@@ -26,7 +29,7 @@ class App {
         next();
     }
 
-    private initializeControllers(controllers: any[]) {
+    private initializeControllers(controllers: Controller[]) {
         controllers.forEach((controller) => {
             this.app.use('/', controller.router);
         });
@@ -37,6 +40,17 @@ class App {
         this.app.listen(process.env.PORT, () => {
             console.log(`App listening on the port ${process.env.PORT}`);
         })
+    }
+
+    private connectToTheDatabase() {
+        // 从.env文件中获取链接数据库所需信息
+        const {
+            MONGO_USER,
+            MONGO_PASSWORD,
+            MONGO_PATH
+        } = process.env;
+
+        mongoose.connect(`mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}${MONGO_PATH}`)
     }
 }
 
