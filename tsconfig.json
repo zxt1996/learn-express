@@ -6,7 +6,8 @@
         "baseUrl": "./src",
         "strict": true,
         "experimentalDecorators": true,
-        "emitDecoratorMetadata": true
+        "emitDecoratorMetadata": true,
+        "moduleResolution": "node"
     },
     "include": [
         "src/**/*.ts", "src/utils/validateEnv.ts"
