@@ -53,4 +53,13 @@ public title!: string;
 - plainToClass: This method transforms a plain javascript object to instance of specific class.
 
 ## JWT
-![](img/JWT.png)
+![](img/JWT.png)  
+
+### Hash
+从安全角度出发，使用Hash保存密码防止密码泄露时人家直接看到了明文
+
+### Bcrypt
+use a bcrypt hashing algorithm implemented   
+
+- bcrypt.hash：进行hash加密，第一个参数是加密对象，第二个值是 salt值(控制加密的强度)
+- bcrypt.compare：进行hash值之间的比较，判断是否相等
