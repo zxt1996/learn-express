@@ -4,9 +4,6 @@ class CreatePost {
     @IsString()
     // The "!" syntax exists for those common-ish cases 
     // where you can't guarantee that the value will be defined immediately.
-    public author!: string;
-
-    @IsString()
     public content!: string;
 
     @IsString()

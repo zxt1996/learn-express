@@ -50,16 +50,28 @@ public title!: string;
 - skipMissingProperties：部分更新功能
 
 ### class-transformer
-- plainToClass: This method transforms a plain javascript object to instance of specific class.
+- plainToClass: This method transforms a plain javascript object to instance of specific class.  
 
-## JWT
-![](img/JWT.png)  
-
-### Hash
+## Hash
 从安全角度出发，使用Hash保存密码防止密码泄露时人家直接看到了明文
 
-### Bcrypt
+## Bcrypt
 use a bcrypt hashing algorithm implemented   
 
 - bcrypt.hash：进行hash加密，第一个参数是加密对象，第二个值是 salt值(控制加密的强度)
 - bcrypt.compare：进行hash值之间的比较，判断是否相等
+
+## JWT
+![](img/JWT.png)  
+
+> JWT(JSON Web Tokens) is a piece of JSON data that is signed on our server using a secret key when the user is logged in and then sent to him in. When he makes other requests, he sends this token in the headers so that we can encode it back using the same secret key. If the token is valid, we know who the user that made the request is.  
+
+### 使用jsonwebtoken包来设置jwt
+- jwt.sign：设置获取token
+- 通过response把token信息带回客户端
+
+```
+response.setHeader('Set-Cookie', [`Authorization=${tokenData.token}; HttpOnly; Max-Age=${tokenData.expiresIn}`);
+```
+- 利用cookie-parser获取请求头中的cookie信息
+- jwt.verify(cookies.Authorization, secret)解析token信息

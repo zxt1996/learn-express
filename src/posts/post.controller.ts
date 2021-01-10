@@ -5,6 +5,8 @@ import { Controller } from '../interfaces/controller.interface';
 import PostNotFoundException from '../exceptions/PostNotFoundException';
 import validationMiddleware from '../middleware/validation.middleware';
 import CreatePost from '../posts/post.dto';
+import authMiddleware from '../middleware/auth.middleware';
+import { RequestWithUser } from 'interfaces/requestWithUser.interface';
 
 class PostsController implements Controller{
     public path = '/posts';
@@ -19,23 +21,26 @@ class PostsController implements Controller{
     public initializeRoutes() {
         this.router.get(this.path, this.getAllPosts);
         this.router.get(`${this.path}/:id`, this.getPostById);
-        this.router.post(this.path, validationMiddleware(CreatePost), this.createPost);
-        // Another common use of the API is when you intend to change an existing document. 
-        // You can do so with the use of HTTP PATCH
-        this.router.patch(`${this.path}/:id`, validationMiddleware(CreatePost, true), this.modifyPost);
-        this.router.delete(`${this.path}/:id`, this.deletePost);
+        this.router
+            .all(`${this.path}/*`, authMiddleware)
+            // Another common use of the API is when you intend to change an existing document. 
+            // You can do so with the use of HTTP PATCH
+            .patch(`${this.path}/:id`, validationMiddleware(CreatePost, true), this.modifyPost)
+            .delete(`${this.path}/:id`, this.deletePost)
+            .post(this.path, authMiddleware, validationMiddleware(CreatePost), this.createPost);
     }
 
-    private createPost = (req: express.Request, res: express.Response) => {
-        const postData: Post = req.body;
+    private createPost = async (req: RequestWithUser, res: express.Response) => {
+        const postData: CreatePost = req.body;
         // not yet saved into the database, but it already has a property called _id . 
         // It is a unique id and is a combination of both a timestamp and a random string.
-        const createdPost = new this.post(postData);
+        const createdPost = new this.post({
+            ...postData,
+            author: req.user?._id
+        });
         // When you run  reatedPost.save() it is saved to the collection
-        createdPost.save()
-            .then((savedPost) => {
-                res.send(savedPost);
-            })
+        const savedPost = await createdPost.save();
+        res.send(savedPost);
     }
 
     private getAllPosts = (req: express.Request, res: express.Response) => {

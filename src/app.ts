@@ -4,6 +4,7 @@ import 'dotenv/config';
 import { Controller } from './interfaces/controller.interface';
 import * as mongoose from 'mongoose';
 import errorMiddleware from './middleware/error.middleware';
+import * as cookieParser from 'cookie-parser'; 
 
 class App {
     public app: express.Application;
@@ -22,6 +23,8 @@ class App {
     private initializeMiddleware() {
         this.app.use(this.loggerMiddleware);
         this.app.use(bodyParser.json());
+        // Thanks to  cookie-parser we have the contents of the cookies accessible through  request.cookies
+        this.app.use(cookieParser());
     }
 
     private initializeErrorHandling() {
