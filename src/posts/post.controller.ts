@@ -40,6 +40,10 @@ class PostsController implements Controller{
         });
         // When you run  reatedPost.save() it is saved to the collection
         const savedPost = await createdPost.save();
+        // populate -> 连表查询，即在另外的集合中引用其文档
+        // 第一个参数是要填充的关联字段
+        // 第二个参数是指定填充document('author')中的哪些字段，加上-则表示不填充
+        await savedPost.populate('author', '-password').execPopulate();
         res.send(savedPost);
     }
 
