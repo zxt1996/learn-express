@@ -3,7 +3,45 @@
 
 使用MVC的结构，然后在Controller层利用各种**中间件**  
 
-![](img/middleware.png)
+![](img/middleware.png)  
+
+Middleware functions can perform the following tasks:  
+- Execute any code.
+- Make changes to the request and the response objects.
+- End the request-response cycle(周期).
+- Call the next middleware in the stack.  
+
+## middleware的大概实现
+```
+var http = require('http');
+
+function express() {
+
+    var funcs = []; // 待执行的函数数组
+
+    var app = function (req, res) {
+        var i = 0;
+
+        function next() {
+            var task = funcs[i++];  // 取出函数数组里的下一个函数
+            if (!task) {    // 如果函数不存在,return
+                return;
+            }
+            task(req, res, next);   // 否则,执行下一个函数
+        }
+
+        next();
+    }
+
+    app.use = function (task) {
+        funcs.push(task);
+    }
+
+    return app;    // 返回实例
+}
+
+var app = express();
+```
 ## environment variables
 - dotenv：调用.env文件中的变量
 - envalid：检查.env文件中的变量
@@ -28,7 +66,7 @@ createdPost.save()
 - postModel.find()
 - postModel.findById(req.params.id)
 - postModel.findByIdAndUpdate(id, postData, { new: true })
-- postModel.findByIdAndDelete(id)
+- postModel.findByIdAndDelete(id)    
 
 ### Express Error handling middleware
 ```
